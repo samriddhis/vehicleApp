@@ -12,18 +12,15 @@ export default class FilterComponent extends React.Component {
       docsChecked: this.props.isDocsAvailableOnly,
       bikeValue: this.props.sliderBikesValue,
       docsValue: this.props.sliderDocsValue,
-      serviceChecked: this.props.isServiceAvailableOnly,
-      visible: false
+      serviceChecked: this.props.isServiceAvailableOnly
     };
   }
   _backButtonPress() {
     console.log("button fires");
     this.props.enableNoFilter();
-    //this.setState({ modalVisible: false });
   }
   _removeFilterButton() {
     this.props.enableNoFilter();
-    //this.setState({ modalVisible: false });
   }
   _applyFilter() {
     this.props.enableNoFilter();
@@ -34,7 +31,6 @@ export default class FilterComponent extends React.Component {
       this.state.docsValue,
       this.state.serviceChecked
     );
-    //this.setState({ modalVisible: false });
   }
   render() {
     return (
