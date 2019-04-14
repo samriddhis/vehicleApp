@@ -21,6 +21,7 @@ export default class FilterComponent extends React.Component {
   }
   _removeFilterButton() {
     this.props.enableNoFilter();
+    this.props.changeBikeAvailibiltyOption(false, false, 0, 0, false);
   }
   _applyFilter() {
     this.props.enableNoFilter();
