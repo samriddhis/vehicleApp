@@ -12,7 +12,8 @@ export default class FilterComponent extends React.Component {
       docsChecked: this.props.isDocsAvailableOnly,
       bikeValue: this.props.sliderBikesValue,
       docsValue: this.props.sliderDocsValue,
-      serviceChecked: this.props.isServiceAvailableOnly
+      serviceChecked: this.props.isServiceAvailableOnly,
+      visible: false
     };
   }
   _backButtonPress() {
@@ -88,6 +89,7 @@ export default class FilterComponent extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 thumbStyle={styles.thumbSliderStyle}
+                disabled={this.state.bikeChecked ? false : true}
                 value={this.state.bikeValue}
                 onValueChange={bikeValue => this.setState({ bikeValue })}
               />
@@ -102,6 +104,7 @@ export default class FilterComponent extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 thumbStyle={styles.thumbSliderStyle}
+                disabled={this.state.bikeChecked ? false : true}
                 value={this.state.docsValue}
                 onValueChange={docsValue => this.setState({ docsValue })}
               />
