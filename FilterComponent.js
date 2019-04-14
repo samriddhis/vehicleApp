@@ -1,36 +1,39 @@
-import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  Modal,
-  TouchableHighlight,
-  Alert
-} from "react-native";
+import React from "react";
+import { StyleSheet, Text, View, Dimensions, Modal, Alert } from "react-native";
 const { height, width } = Dimensions.get("window");
 import { Icon, CheckBox, Slider, Button } from "react-native-elements";
-import ListComponent from "./ListComponent";
-import App from "./App";
 
 export default class FilterComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       modalVisible: true,
-      bikeChecked: false,
-      docsChecked: false,
-      serviceChecked: false
+      bikeChecked: this.props.isBikeAvailableOnly,
+      docsChecked: this.props.isDocsAvailableOnly,
+      bikeValue: this.props.sliderBikesValue,
+      docsValue: this.props.sliderDocsValue,
+      serviceChecked: this.props.isServiceAvailableOnly
     };
   }
   _backButtonPress() {
-    this.setState({ modalVisible: false });
+    console.log("button fires");
+    this.props.enableNoFilter();
+    //this.setState({ modalVisible: false });
   }
   _removeFilterButton() {
-    this.setState({ modalVisible: false });
+    this.props.enableNoFilter();
+    //this.setState({ modalVisible: false });
   }
   _applyFilter() {
-    this.setState({ modalVisible: false });
+    this.props.enableNoFilter();
+    this.props.changeBikeAvailibiltyOption(
+      this.state.bikeChecked,
+      this.state.docsChecked,
+      this.state.bikeValue,
+      this.state.docsValue,
+      this.state.serviceChecked
+    );
+    //this.setState({ modalVisible: false });
   }
   render() {
     return (
@@ -39,12 +42,12 @@ export default class FilterComponent extends React.Component {
           style={styles.modalStyle}
           animationType="slide"
           transparent={false}
-          visible={this.state.modalVisible}
+          visible={!this.props.modalVisible}
           onRequestClose={() => {
             Alert.alert("Modal has been closed.");
           }}
         >
-          <View style={styles.headerStyle}>
+          <View style={[styles.headerStyle, { marginTop: height / 10 }]}>
             <Icon
               color="#fff"
               style={styles.filterStyle}
@@ -66,9 +69,9 @@ export default class FilterComponent extends React.Component {
               iconRight
               title="Bikes Available"
               checked={this.state.bikeChecked}
-              onPress={() =>
-                this.setState({ bikeChecked: !this.state.bikeChecked })
-              }
+              onPress={() => {
+                this.setState({ bikeChecked: !this.state.bikeChecked });
+              }}
             />
             <CheckBox
               iconRight
@@ -158,7 +161,6 @@ const styles = StyleSheet.create({
     padding: 10
   },
   textSliderStyle: {
-    fontFamily: "Montserrat",
     fontSize: 14,
     fontWeight: "bold"
   },

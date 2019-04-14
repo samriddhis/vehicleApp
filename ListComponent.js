@@ -1,9 +1,15 @@
-import React, { Component } from "react";
-import { StyleSheet, Text, View, FlatList, Dimensions } from "react-native";
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Dimensions,
+  Alert
+} from "react-native";
 import * as data from "./codebeautify.json";
 const { height, width } = Dimensions.get("window");
 import { Icon } from "react-native-elements";
-
 
 export default class ListComponent extends React.Component {
   constructor(props) {
@@ -43,7 +49,7 @@ export default class ListComponent extends React.Component {
       <View style={styles.container}>
         <FlatList
           style={styles.dataStyle}
-          data={this.state.newsData}
+          data={this.props.newsData}
           renderItem={this._renderItem}
         />
       </View>
