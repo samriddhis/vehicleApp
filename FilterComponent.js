@@ -16,16 +16,15 @@ export default class FilterComponent extends React.Component {
     };
   }
   _backButtonPress() {
-    console.log("button fires");
     this.props.enableNoFilter();
   }
   _removeFilterButton() {
     this.props.enableNoFilter();
-    this.props.changeBikeAvailibiltyOption(false, false, 0, 0, false);
+    this.props.changeBikeAvailibiltyOptionFarzi(false, false, 0, 0, false);
   }
   _applyFilter() {
     this.props.enableNoFilter();
-    this.props.changeBikeAvailibiltyOption(
+    this.props.changeBikeAvailibiltyOptionFarzi(
       this.state.bikeChecked,
       this.state.docsChecked,
       this.state.bikeValue,
@@ -45,7 +44,7 @@ export default class FilterComponent extends React.Component {
             Alert.alert("Modal has been closed.");
           }}
         >
-          <View style={[styles.headerStyle, { marginTop: height / 10 }]}>
+          <View style={[styles.headerStyle, { marginTop: height / 40 }]}>
             <Icon
               color="#fff"
               style={styles.filterStyle}
@@ -86,7 +85,6 @@ export default class FilterComponent extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 thumbStyle={styles.thumbSliderStyle}
-                disabled={this.state.bikeChecked ? false : true}
                 value={this.state.bikeValue}
                 onValueChange={bikeValue => this.setState({ bikeValue })}
               />
@@ -101,7 +99,6 @@ export default class FilterComponent extends React.Component {
                 minimumValue={0}
                 maximumValue={100}
                 thumbStyle={styles.thumbSliderStyle}
-                disabled={this.state.bikeChecked ? false : true}
                 value={this.state.docsValue}
                 onValueChange={docsValue => this.setState({ docsValue })}
               />
@@ -140,7 +137,7 @@ const styles = StyleSheet.create({
   },
   modalStyle: {},
   headerStyle: {
-    padding: 15,
+    padding: width / 30,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -155,7 +152,8 @@ const styles = StyleSheet.create({
     color: "#fff"
   },
   containerStyle: {
-    padding: 15
+    padding: width / 30,
+    width: width
   },
   bikeViewStyle: {
     padding: 10

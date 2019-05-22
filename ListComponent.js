@@ -5,7 +5,8 @@ import {
   View,
   FlatList,
   Dimensions,
-  Alert
+  Alert,
+  TouchableOpacity
 } from "react-native";
 import * as data from "./codebeautify.json";
 const { height, width } = Dimensions.get("window");
@@ -15,7 +16,7 @@ export default class ListComponent extends React.Component {
   constructor(props) {
     super(props);
     const records = data.stationBeanList;
-    this.state = { newsData: records };
+    this.state = { newsData: records, listScrollHeight: 0 };
   }
   _renderItem = ({ item, index }) => (
     <View style={styles.listViewStyle}>
@@ -49,8 +50,58 @@ export default class ListComponent extends React.Component {
       <View style={styles.container}>
         <FlatList
           style={styles.dataStyle}
+          ref={ref => (this.listRef = ref)}
           data={this.props.newsData}
           renderItem={this._renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          onScroll={event =>
+            this.setState({
+              listScrollHeight: event.nativeEvent.contentOffset.y
+            })
+          }
+          stickyHeaderIndices={[0]}
+          ListHeaderComponent={() => {
+            if (this.state.listScrollHeight > height) {
+              return (
+                <View
+                  style={{
+                    width: width,
+                    height: height / 15,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.listRef.scrollToIndex({ animated: true, index: 0 })
+                    }
+                    style={{
+                      width: width / 3,
+                      height: height / 20,
+                      borderRadius: width / 30,
+                      shadowOffset: { width: 3, height: 3 },
+                      shadowColor: "black",
+                      shadowOpacity: 0.3,
+                      elevation: 5,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "#fff"
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: height / 55,
+                        color: "#c13d4a"
+                      }}
+                    >
+                      {`Scroll to top`}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            } else return null;
+          }}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </View>
     );
@@ -64,28 +115,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F6F6F6"
   },
+  separator: {
+    width: width,
+    height: height / 40,
+    backgroundColor: "#ececec"
+  },
   listViewStyle: {
     backgroundColor: "#FFFFFF",
     padding: width / 20
   },
   bikeViewStyle: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    marginTop: height / 90,
     width: width / 7,
     justifyContent: "space-between"
   },
   docViewStyle: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    marginTop: height / 90,
     width: width / 7,
     justifyContent: "space-between"
   },
   statusViewStyle: {
-    flex: 1,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    marginTop: height / 90
   },
   stationTextStyle: {
     fontWeight: "bold",
