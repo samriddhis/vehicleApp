@@ -9,11 +9,13 @@ import {
   BackHandler
 } from "react-native";
 const { height, width } = Dimensions.get("window");
-import { Icon } from "react-native-elements";
+import { Icon, SearchBar } from "react-native-elements";
 import ListComponent from "./ListComponent";
 import FilterComponent from "./FilterComponent";
 import SortComponent from "./SortComponent";
 import * as data from "./codebeautify.json";
+
+//url to fetch list https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList
 
 export default class App extends React.Component {
   constructor(props) {
@@ -30,7 +32,8 @@ export default class App extends React.Component {
       isBLowToHigh: false,
       isBHighToLow: false,
       isDLowToHigh: false,
-      isDHighToLow: false
+      isDHighToLow: false,
+      text: ""
     };
     this.enableNoFilter = this.enableNoFilter.bind(this);
     this.enableNoSort = this.enableNoSort.bind(this);
@@ -39,6 +42,7 @@ export default class App extends React.Component {
     );
     this.applySortOption = this.applySortOption.bind(this);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+    this.arrayholder = data.stationBeanList ;
   }
 
   componentWillMount() {
@@ -205,6 +209,19 @@ export default class App extends React.Component {
       itemList: newData
     });
   };
+  _filterPress() {
+    this.setState({ noFilter: !this.state.noFilter });
+  }
+  
+  searchFilterFunction = text => {
+    const newData = this.arrayholder.filter(item => {
+      const itemData = item.stationName.toUpperCase()
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({ itemList:newData , text: text });
+  };
 
   render() {
     return (
@@ -219,9 +236,7 @@ export default class App extends React.Component {
                 style={styles.filterStyle}
                 name="filter"
                 type="font-awesome"
-                onPress={() =>
-                  this.setState({ noFilter: !this.state.noFilter })
-                }
+                onPress={() => this._filterPress()}
               />
               <Icon
                 color="#fff"
@@ -231,6 +246,16 @@ export default class App extends React.Component {
                 onPress={() => this.setState({ noSort: !this.state.noSort })}
               />
             </View>
+          </View>
+          <View style={styles.SearchBarViewStyle}>
+            <SearchBar
+              style={styles.SearchBarStyle}
+              lightTheme
+              placeholder="Type Here..."
+              onChangeText={text => this.searchFilterFunction(text)}
+              autoCorrect={false}
+              value={this.state.text}
+            />
           </View>
           {this.state.noFilter && this.state.noSort ? (
             <ListComponent newsData={this.state.itemList} />
@@ -298,5 +323,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   filterStyle: {},
-  sortStyle: {}
+  sortStyle: {},
+  SearchBarViewStyle: {
+    width: width
+  }
 });
