@@ -6,14 +6,15 @@ import {
   Dimensions,
   SafeAreaView,
   StatusBar,
-  BackHandler
+  BackHandler,
+  ActivityIndicator
 } from "react-native";
 const { height, width } = Dimensions.get("window");
 import { Icon, SearchBar } from "react-native-elements";
 import ListComponent from "./ListComponent";
 import FilterComponent from "./FilterComponent";
 import SortComponent from "./SortComponent";
-import * as data from "./codebeautify.json";
+//import * as data from "./codebeautify.json";
 
 //url to fetch list https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList
 
@@ -28,12 +29,13 @@ export default class App extends React.Component {
       isServiceAvailableOnly: false,
       sliderBikesValue: 0,
       sliderDocsValue: 0,
-      itemList: data.stationBeanList,
+      // itemList: data.stationBeanList,
       isBLowToHigh: false,
       isBHighToLow: false,
       isDLowToHigh: false,
       isDHighToLow: false,
-      text: ""
+      text: "",
+      isLoading: true
     };
     this.enableNoFilter = this.enableNoFilter.bind(this);
     this.enableNoSort = this.enableNoSort.bind(this);
@@ -42,7 +44,6 @@ export default class App extends React.Component {
     );
     this.applySortOption = this.applySortOption.bind(this);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-    this.arrayholder = data.stationBeanList ;
   }
 
   componentWillMount() {
@@ -50,6 +51,23 @@ export default class App extends React.Component {
       "hardwareBackPress",
       this.handleBackButtonClick
     );
+  }
+
+  componentDidMount() {
+    return fetch(
+      "https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList"
+    )
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({
+          isLoading: false,
+          itemList: responseJson.stationBeanList
+        });
+        this.arrayholder = this.state.itemData;
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 
   componentWillUnmount() {
@@ -212,18 +230,25 @@ export default class App extends React.Component {
   _filterPress() {
     this.setState({ noFilter: !this.state.noFilter });
   }
-  
+
   searchFilterFunction = text => {
     const newData = this.arrayholder.filter(item => {
-      const itemData = item.stationName.toUpperCase()
+      const itemData = item.stationName.toUpperCase();
       const textData = text.toUpperCase();
 
       return itemData.indexOf(textData) > -1;
     });
-    this.setState({ itemList:newData , text: text });
+    this.setState({ itemList: newData, text: text });
   };
 
   render() {
+    /*  if (this.state.isLoading) {
+      return (
+        <View style={{ flex: 1, padding: 20 }}>
+          <ActivityIndicator />
+        </View>
+      );
+    }*/
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar backgroundColor={"#3973ad"} barStyle={"light-content"} />
@@ -257,6 +282,13 @@ export default class App extends React.Component {
               value={this.state.text}
             />
           </View>
+          {this.state.isLoading ? (
+            <View style={styles.indicatorViewStyle}>
+              <ActivityIndicator color="#3973ad" size="large" style={styles.indicatorStyle} />
+            </View>
+          ) : (
+            <View />
+          )}
           {this.state.noFilter && this.state.noSort ? (
             <ListComponent newsData={this.state.itemList} />
           ) : (
@@ -326,5 +358,15 @@ const styles = StyleSheet.create({
   sortStyle: {},
   SearchBarViewStyle: {
     width: width
+  },
+  indicatorViewStyle: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  indicatorStyle: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
