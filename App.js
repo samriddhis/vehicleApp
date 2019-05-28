@@ -44,30 +44,50 @@ export default class App extends React.Component {
     );
     this.applySortOption = this.applySortOption.bind(this);
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-  }
-
-  componentWillMount() {
     BackHandler.addEventListener(
       "hardwareBackPress",
       this.handleBackButtonClick
     );
   }
 
-  componentDidMount() {
-    return fetch(
-      "https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList"
-    )
-      .then(response => response.json())
-      .then(responseJson => {
-        this.setState({
-          isLoading: false,
-          itemList: responseJson.stationBeanList
-        });
-        this.arrayholder = this.state.itemData;
-      })
-      .catch(error => {
-        console.error(error);
+  callVehicleApi(){
+    return new Promise(function(resolve,reject){
+      try{
+        fetch(
+          "https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList"
+        )
+          .then(response => response.json())
+          .then(responseJson => {
+            resolve(responseJson)
+          })
+          .catch(error => {
+            console.error(error);
+            reject(error)
+          });
+      }catch(error){
+        reject(error)
+      }
+    })
+    
+  }
+
+  async getPromiseValue(){
+    try{
+      let response = await this.callVehicleApi()
+      console.log("response from server",response)
+      this.setState({
+        isLoading: false,
+        itemList: response.stationBeanList
       });
+      this.arrayholder = this.state.itemList;
+    }catch(error){
+      console.log("error is",error)
+      this.setState({isLoading:false,itemList:[]})
+    }
+    
+  }
+  componentDidMount() {
+    this.getPromiseValue()
   }
 
   componentWillUnmount() {
