@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, Dimensions, Modal, Alert } from "react-native";
 const { height, width } = Dimensions.get("window");
 import { Icon, CheckBox, Slider, Button } from "react-native-elements";
-
-export default class FilterComponent extends React.Component {
+import { connect } from "react-redux";
+class FilterComponent extends React.Component {
   constructor(props) {
-    console.log("props are", props);
+    console.log("props of filter component", props);
     super(props);
     this.state = {
       bikeChecked: this.props.navigation.getParam("isBikeAvailableOnly"),
@@ -175,3 +175,14 @@ const styles = StyleSheet.create({
     padding: 10
   }
 });
+
+// here state is the state of redux store
+function mapStateToProps(state) {
+  return {
+    farzi: state.yourStore.farzi,
+    vehicleList: state.myStore.vehicleList
+  };
+}
+
+// this line connects our screen or component to redux state
+export default connect(mapStateToProps)(FilterComponent);

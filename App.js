@@ -14,13 +14,15 @@ import { Icon, SearchBar } from "react-native-elements";
 import ListComponent from "./ListComponent";
 import FilterComponent from "./FilterComponent";
 import SortComponent from "./SortComponent";
+import { connect } from "react-redux";
 //import * as data from "./codebeautify.json";
 
 //url to fetch list https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList
 
-export default class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
+    console.log("props in app", props);
     this.state = {
       noFilter: true,
       noSort: true,
@@ -379,3 +381,11 @@ const styles = StyleSheet.create({
     alignItems: "center"
   }
 });
+
+function mapStateToProps(state) {
+  return {
+    vehicleList: state.myStore.vehicleList
+  };
+}
+
+export default connect(mapStateToProps)(App);
