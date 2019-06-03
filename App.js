@@ -50,44 +50,42 @@ export default class App extends React.Component {
     );
   }
 
-  callVehicleApi(){
-    return new Promise(function(resolve,reject){
-      try{
+  callVehicleApi() {
+    return new Promise(function(resolve, reject) {
+      try {
         fetch(
           "https://5d176983-cb02-4f48-b307-5a24d9961571.mock.pstmn.io/getVehicleList"
         )
           .then(response => response.json())
           .then(responseJson => {
-            resolve(responseJson)
+            resolve(responseJson);
           })
           .catch(error => {
             console.error(error);
-            reject(error)
+            reject(error);
           });
-      }catch(error){
-        reject(error)
+      } catch (error) {
+        reject(error);
       }
-    })
-    
+    });
   }
 
-  async getPromiseValue(){
-    try{
-      let response = await this.callVehicleApi()
-      console.log("response from server",response)
+  async getPromiseValue() {
+    try {
+      let response = await this.callVehicleApi();
+      console.log("response from server", response);
       this.setState({
         isLoading: false,
         itemList: response.stationBeanList
       });
       this.arrayholder = this.state.itemList;
-    }catch(error){
-      console.log("error is",error)
-      this.setState({isLoading:false,itemList:[]})
+    } catch (error) {
+      console.log("error is", error);
+      this.setState({ isLoading: false, itemList: [] });
     }
-    
   }
   componentDidMount() {
-    this.getPromiseValue()
+    this.getPromiseValue();
   }
 
   componentWillUnmount() {
@@ -119,7 +117,7 @@ export default class App extends React.Component {
     let newData = [];
     if (bikeChecked === true && docsChecked === true) {
       if (serviceChecked === true) {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableBikes > 0 &&
             row.availableDocks > 0 &&
@@ -128,7 +126,7 @@ export default class App extends React.Component {
             row.statusValue == "In Service"
         );
       } else {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableBikes > 0 &&
             row.availableDocks > 0 &&
@@ -138,7 +136,7 @@ export default class App extends React.Component {
       }
     } else if (docsChecked === true) {
       if (serviceChecked === true) {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableDocks > 0 &&
             row.availableBikes > bikeValue &&
@@ -146,7 +144,7 @@ export default class App extends React.Component {
             row.statusValue == "In Service"
         );
       } else {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableDocks > 0 &&
             row.availableBikes > bikeValue &&
@@ -155,7 +153,7 @@ export default class App extends React.Component {
       }
     } else if (bikeChecked === true) {
       if (serviceChecked === true) {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableBikes > 0 &&
             row.availableBikes > bikeValue &&
@@ -163,7 +161,7 @@ export default class App extends React.Component {
             row.statusValue == "In Service"
         );
       } else {
-        newData = data.stationBeanList.filter(
+        newData = this.state.itemList.filter(
           row =>
             row.availableBikes > 0 &&
             row.availableBikes > bikeValue &&
@@ -171,7 +169,7 @@ export default class App extends React.Component {
         );
       }
     } else {
-      newData = data.stationBeanList;
+      newData = this.state.itemList;
     }
 
     this.setState({
@@ -192,7 +190,7 @@ export default class App extends React.Component {
     serviceChecked
   ) => {
     let newData = [];
-    newData = data.stationBeanList.filter(row => {
+    newData = this.state.itemList.filter(row => {
       let condition = true;
       if (bikeChecked === true) {
         condition = condition && row.availableBikes > 0;
@@ -217,9 +215,9 @@ export default class App extends React.Component {
     });
   };
   applySortOption = (bLowToHigh, bHighToLow, dLowToHigh, dHighToLow) => {
-    newData = data.stationBeanList.slice();
+    saveData = this.state.itemList.slice();
     if (bLowToHigh || bHighToLow || dLowToHigh || dHighToLow) {
-      newData = newData.sort(function(a, b) {
+      newData = saveData.sort(function(a, b) {
         let condition = false;
         if (bLowToHigh === true) {
           condition = a.availableBikes - b.availableBikes;
@@ -236,7 +234,7 @@ export default class App extends React.Component {
         return condition;
       });
     } else {
-      newData = data.stationBeanList;
+      newData = saveData;
     }
 
     this.setState({
@@ -248,7 +246,21 @@ export default class App extends React.Component {
     });
   };
   _filterPress() {
-    this.setState({ noFilter: !this.state.noFilter });
+    //this.setState({ noFilter: !this.state.noFilter });
+    this.props.navigation.navigate("FilterScreen", {
+      scope: this,
+      modalVisible: this.state.noFilter,
+      isBikeAvailableOnly: this.state.isBikeAvailableOnly,
+      isDocsAvailableOnly: this.state.isDocsAvailableOnly,
+      sliderBikesValue: this.state.sliderBikesValue,
+      sliderDocsValue: this.state.sliderDocsValue,
+      isServiceAvailableOnly: this.state.isServiceAvailableOnly,
+      enableNoFilter: this.enableNoFilter,
+      changeBikeAvailibiltyOption: this
+        .changeBikeAvailibiltyOption,
+      changeBikeAvailibiltyOptionFarzi: this
+        .changeBikeAvailibiltyOptionFarzi
+    })
   }
 
   searchFilterFunction = text => {
@@ -262,13 +274,6 @@ export default class App extends React.Component {
   };
 
   render() {
-    /*  if (this.state.isLoading) {
-      return (
-        <View style={{ flex: 1, padding: 20 }}>
-          <ActivityIndicator />
-        </View>
-      );
-    }*/
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar backgroundColor={"#3973ad"} barStyle={"light-content"} />
@@ -304,7 +309,11 @@ export default class App extends React.Component {
           </View>
           {this.state.isLoading ? (
             <View style={styles.indicatorViewStyle}>
-              <ActivityIndicator color="#3973ad" size="large" style={styles.indicatorStyle} />
+              <ActivityIndicator
+                color="#3973ad"
+                size="large"
+                style={styles.indicatorStyle}
+              />
             </View>
           ) : (
             <View />
@@ -313,8 +322,22 @@ export default class App extends React.Component {
             <ListComponent newsData={this.state.itemList} />
           ) : (
             <View>
-              {!this.state.noFilter ? (
-                <FilterComponent
+              {/*!this.state.noFilter
+                ? this.props.navigation.navigate("FilterScreen", {
+                    scope: this,
+                    modalVisible: this.state.noFilter,
+                    isBikeAvailableOnly: this.state.isBikeAvailableOnly,
+                    isDocsAvailableOnly: this.state.isDocsAvailableOnly,
+                    sliderBikesValue: this.state.sliderBikesValue,
+                    sliderDocsValue: this.state.sliderDocsValue,
+                    isServiceAvailableOnly: this.state.isServiceAvailableOnly,
+                    enableNoFilter: this.enableNoFilter,
+                    changeBikeAvailibiltyOption: this
+                      .changeBikeAvailibiltyOption,
+                    changeBikeAvailibiltyOptionFarzi: this
+                      .changeBikeAvailibiltyOptionFarzi
+                  })
+                :   <FilterComponent
                   enableNoFilter={this.enableNoFilter}
                   modalVisible={this.state.noFilter}
                   isBikeAvailableOnly={this.state.isBikeAvailableOnly}
@@ -327,8 +350,17 @@ export default class App extends React.Component {
                     this.changeBikeAvailibiltyOptionFarzi
                   }
                 />
-              ) : (
-                <SortComponent
+                  this.props.navigation.navigate("SortScreen", {
+                    scope: this,
+                    enableNoSort: this.enableNoSort,
+                    modalVisible: this.state.noSort,
+                    isBLowToHigh: this.state.isBLowToHigh,
+                    isBHighToLow: this.state.isBHighToLow,
+                    isDLowToHigh: this.state.isDLowToHigh,
+                    isDHighToLow: this.state.isDHighToLow,
+                    applySortOption: this.applySortOption
+                  })
+               <SortComponent
                   enableNoSort={this.enableNoSort}
                   modalVisible={this.state.noSort}
                   isBLowToHigh={this.state.isBLowToHigh}
@@ -337,7 +369,7 @@ export default class App extends React.Component {
                   isDHighToLow={this.state.isDHighToLow}
                   applySortOption={this.applySortOption}
                 />
-              )}
+             */}
             </View>
           )}
         </View>

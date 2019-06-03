@@ -8,103 +8,123 @@ export default class SortComponent extends React.Component {
     super(props);
     this.state = {
       modalVisible: true,
-      bLowToHigh: this.props.isBLowToHigh,
-      bHighToLow: this.props.isBHighToLow,
-      dLowToHigh: this.props.isDLowToHigh,
-      dHighToLow: this.props.isDHighToLow
+      bLowToHigh: this.props.navigation.getParam("isBLowToHigh"),
+      bHighToLow: this.props.navigation.getParam("isBHighToLow"),
+      dLowToHigh: this.props.navigation.getParam("isDLowToHigh"),
+      dHighToLow: this.props.navigation.getParam("isDHighToLow")
     };
+    const { navigation } = this.props;
+    this.enableNoSort = navigation.getParam("enableNoSort", function() {});
+    this.applySortOption = navigation.getParam(
+      "applySortOption",
+      function() {}
+    );
+    this.scope = navigation.getParam("scope");
   }
   _backButtonPress() {
-    this.props.enableNoSort();
+    this.enableNoSort();
+    this.props.navigation.goBack();
   }
   _removeFilterButton() {
-    this.props.enableNoSort();
-    this.props.applySortOption(false, false, false, false);
+    this.enableNoSort();
+    this.applySortOption.apply(this.scope, [false, false, false, false]);
+    this.props.navigation.goBack();
   }
   _applyFilter() {
-    this.props.enableNoSort();
-    this.props.applySortOption(
+    this.enableNoSort();
+    this.applySortOption.apply(this.scope, [
       this.state.bLowToHigh,
       this.state.bHighToLow,
       this.state.dLowToHigh,
       this.state.dHighToLow
-    );
+    ]);
+    this.props.navigation.goBack();
   }
   render() {
     return (
       <View style={styles.filterContainerStyle}>
-        <Modal
-          style={styles.modalStyle}
-          animationType="slide"
-          transparent={false}
-          visible={!this.props.modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <View style={[styles.headerStyle, { marginTop: height / 40 }]}>
-            <Icon
-              color="#fff"
-              style={styles.filterStyle}
-              name="arrowleft"
-              type="antdesign"
-              onPress={() => this._backButtonPress()}
+        <View style={[styles.headerStyle]}>
+          <Icon
+            color="#fff"
+            style={styles.filterStyle}
+            name="arrowleft"
+            type="antdesign"
+            onPress={() => this._backButtonPress()}
+          />
+          <Text style={styles.headerTextStyle}>Sort</Text>
+          <Icon
+            color="#fff"
+            style={styles.filterStyle}
+            name="clear"
+            type="material-icons"
+            onPress={() => this._removeFilterButton()}
+          />
+        </View>
+        <View style={styles.containerStyle}>
+          <View style={styles.buttonViewStyle}>
+            <CheckBox
+              title="Bikes(Asc)"
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              checked={this.state.bLowToHigh}
+              onPress={() => {
+                this.setState({
+                  bLowToHigh: !this.state.bLowToHigh,
+                  bHighToLow: false,
+                  dLowToHigh: false,
+                  dHighToLow: false
+                });
+              }}
             />
-            <Text style={styles.headerTextStyle}>Sort</Text>
-            <Icon
-              color="#fff"
-              style={styles.filterStyle}
-              name="clear"
-              type="material-icons"
-              onPress={() => this._removeFilterButton()}
+            <CheckBox
+              title="Bikes(Desc)"
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              checked={this.state.bHighToLow}
+              onPress={() =>
+                this.setState({
+                  bHighToLow: !this.state.bHighToLow,
+                  bLowToHigh: false,
+                  dLowToHigh: false,
+                  dHighToLow: false
+                })
+              }
+            />
+            <CheckBox
+              title="Docs(Asc)"
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              checked={this.state.dLowToHigh}
+              onPress={() => {
+                this.setState({
+                  dLowToHigh: !this.state.dLowToHigh,
+                  bLowToHigh: false,
+                  bHighToLow: false,
+                  dHighToLow: false
+                });
+              }}
+            />
+            <CheckBox
+              title="Docs(Desc)"
+              checkedIcon="dot-circle-o"
+              uncheckedIcon="circle-o"
+              checked={this.state.dHighToLow}
+              onPress={() =>
+                this.setState({
+                  dHighToLow: !this.state.dHighToLow,
+                  bLowToHigh: false,
+                  bHighToLow: false,
+                  dLowToHigh: false
+                })
+              }
+            />
+            <Button
+              style={styles.buttonStyle}
+              title="Apply"
+              onPress={() => this._applyFilter()}
             />
           </View>
-          <View style={styles.containerStyle}>
-            <View style={styles.buttonViewStyle}>
-              <CheckBox
-                title="Bikes(Asc)"
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checked={this.state.bLowToHigh}
-                onPress={() => {
-                  this.setState({ bLowToHigh: !this.state.bLowToHigh });
-                }}
-              />
-              <CheckBox
-                title="Bikes(Desc)"
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checked={this.state.bHighToLow}
-                onPress={() =>
-                  this.setState({ bHighToLow: !this.state.bHighToLow })
-                }
-              />
-              <CheckBox
-                title="Docs(Asc)"
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checked={this.state.dLowToHigh}
-                onPress={() => {
-                  this.setState({ dLowToHigh: !this.state.dLowToHigh });
-                }}
-              />
-              <CheckBox
-                title="Docs(Desc)"
-                checkedIcon="dot-circle-o"
-                uncheckedIcon="circle-o"
-                checked={this.state.dHighToLow}
-                onPress={() =>
-                  this.setState({ dHighToLow: !this.state.dHighToLow })
-                }
-              />
-              <Button
-                style={styles.buttonStyle}
-                title="Apply"
-                onPress={() => this._applyFilter()}
-              />
-            </View>
-          </View>
-        </Modal>
+        </View>
       </View>
     );
   }
