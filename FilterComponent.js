@@ -8,40 +8,40 @@ class FilterComponent extends React.Component {
     console.log("props of filter component", props);
     super(props);
     this.state = {
-      bikeChecked: this.props.navigation.getParam("isBikeAvailableOnly"),
-      docsChecked: this.props.navigation.getParam("isDocsAvailableOnly"),
-      bikeValue: this.props.navigation.getParam("sliderBikesValue"),
-      docsValue: this.props.navigation.getParam("sliderDocsValue"),
-      serviceChecked: this.props.navigation.getParam("isServiceAvailableOnly")
+      bikeChecked: this.props.filter.isBikeAvailableOnly,
+      docsChecked: this.props.filter.isDocsAvailableOnly,
+      bikeValue: this.props.filter.sliderBikesValue,
+      docsValue: this.props.filter.sliderDocsValue,
+      serviceChecked: this.props.filter.isServiceAvailableOnly
     };
-    const { navigation } = this.props;
-    this.changeBikeAvailibiltyOptionFarzi = navigation.getParam(
-      "changeBikeAvailibiltyOptionFarzi",
-      function() {}
-    );
-    this.scope = navigation.getParam("scope");
   }
   _backButtonPress() {
     this.props.navigation.goBack();
   }
   _removeFilterButton() {
-    this.changeBikeAvailibiltyOptionFarzi.apply(this.scope, [
-      false,
-      false,
-      0,
-      0,
-      false
-    ]);
+    this.props.dispatch({
+      type: "CHANGE_FILTER_OPTION_VALUE",
+      payload: {
+        isBikeAvailableOnly: false,
+        isDocsAvailableOnly: false,
+        sliderBikesValue: 0,
+        sliderDocsValue: 0,
+        isServiceAvailableOnly: false
+      }
+    });
     this.props.navigation.goBack();
   }
   _applyFilter() {
-    this.changeBikeAvailibiltyOptionFarzi.apply(this.scope, [
-      this.state.bikeChecked,
-      this.state.docsChecked,
-      this.state.bikeValue,
-      this.state.docsValue,
-      this.state.serviceChecked
-    ]);
+    this.props.dispatch({
+      type: "CHANGE_FILTER_OPTION_VALUE",
+      payload: {
+        isBikeAvailableOnly: this.state.bikeChecked,
+        isDocsAvailableOnly: this.state.docsChecked,
+        sliderBikesValue: this.state.bikeValue,
+        sliderDocsValue: this.state.docsValue,
+        isServiceAvailableOnly: this.state.serviceChecked
+      }
+    });
     this.props.navigation.goBack();
   }
   render() {
@@ -180,7 +180,8 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
   return {
     farzi: state.yourStore.farzi,
-    vehicleList: state.myStore.vehicleList
+    vehicleList: state.myStore.vehicleList,
+    filter: state.yourStore.filter
   };
 }
 

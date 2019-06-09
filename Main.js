@@ -23,7 +23,14 @@ const myStore = (state = initialState, action) => {
 };
 
 const initialStateTemp = {
-  farzi: "farzi"
+  farzi: "farzi",
+  filter: {
+    isBikeAvailableOnly: false,
+    isDocsAvailableOnly: false,
+    isServiceAvailableOnly: false,
+    sliderBikesValue: 0,
+    sliderDocsValue: 0
+  }
 };
 
 // method to invoke DO_NOTHING
@@ -39,6 +46,12 @@ const yourStore = (state = initialStateTemp, action) => {
       return {
         ...state,
         farzi: "No farzi"
+      };
+    case "CHANGE_FILTER_OPTION_VALUE":
+      console.log("action dipatched", action);
+      return {
+        ...state,
+        filter: action.payload
       };
     default:
       return state;

@@ -185,35 +185,32 @@ class App extends React.Component {
     });
   };
 
-  changeBikeAvailibiltyOptionFarzi = (
-    bikeChecked,
-    docsChecked,
-    bikeValue,
-    docsValue,
-    serviceChecked
-  ) => {
+  changeBikeAvailibiltyOptionFarzi = filter => {
+    console.log("props in farzi option", this.props);
     let newData = [];
+    const {
+      isBikeAvailableOnly,
+      isDocsAvailableOnly,
+      sliderBikesValue,
+      sliderDocsValue,
+      isServiceAvailableOnly
+    } = filter;
     newData = this.state.defaultData.filter(row => {
       let condition = true;
-      if (bikeChecked === true) {
+      if (isBikeAvailableOnly === true) {
         condition = condition && row.availableBikes > 0;
       }
-      if (docsChecked === true) {
+      if (isDocsAvailableOnly === true) {
         condition = condition && row.availableDocks > 0;
       }
-      condition = condition && row.availableBikes >= bikeValue;
-      condition = condition && row.availableDocks >= docsValue;
-      if (serviceChecked === true) {
+      condition = condition && row.availableBikes >= sliderBikesValue;
+      condition = condition && row.availableDocks >= sliderDocsValue;
+      if (isServiceAvailableOnly === true) {
         condition = condition && row.statusValue === "In Service";
       }
       return condition;
     });
     this.setState({
-      isBikeAvailableOnly: bikeChecked,
-      isDocsAvailableOnly: docsChecked,
-      sliderBikesValue: bikeValue,
-      sliderDocsValue: docsValue,
-      isServiceAvailableOnly: serviceChecked,
       itemList: newData
     });
   };
@@ -250,18 +247,7 @@ class App extends React.Component {
   };
   _filterPress() {
     //this.setState({ noFilter: !this.state.noFilter });
-    this.props.navigation.navigate("FilterScreen", {
-      scope: this,
-      modalVisible: this.state.noFilter,
-      isBikeAvailableOnly: this.state.isBikeAvailableOnly,
-      isDocsAvailableOnly: this.state.isDocsAvailableOnly,
-      sliderBikesValue: this.state.sliderBikesValue,
-      sliderDocsValue: this.state.sliderDocsValue,
-      isServiceAvailableOnly: this.state.isServiceAvailableOnly,
-      enableNoFilter: this.enableNoFilter,
-      changeBikeAvailibiltyOption: this.changeBikeAvailibiltyOption,
-      changeBikeAvailibiltyOptionFarzi: this.changeBikeAvailibiltyOptionFarzi
-    });
+    this.props.navigation.navigate("FilterScreen");
   }
 
   searchFilterFunction = text => {
@@ -273,6 +259,14 @@ class App extends React.Component {
     });
     this.setState({ itemList: newData, text: text });
   };
+
+  shouldComponentUpdate(props, state) {
+    console.log("the props are changed", props, this.props);
+    if (props.filter !== this.props.filter) {
+      this.changeBikeAvailibiltyOptionFarzi(props.filter);
+    }
+    return true;
+  }
 
   render() {
     return (
@@ -384,7 +378,8 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
   return {
-    vehicleList: state.myStore.vehicleList
+    vehicleList: state.myStore.vehicleList,
+    filter: state.yourStore.filter
   };
 }
 
