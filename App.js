@@ -32,7 +32,6 @@ class App extends React.Component {
       sliderBikesValue: 0,
       sliderDocsValue: 0,
       // itemList: data.stationBeanList,
-
       text: "",
       isLoading: true,
       defaultData: []
